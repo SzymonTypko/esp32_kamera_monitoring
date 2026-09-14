@@ -13,4 +13,11 @@ namespace MQTTConfig {
     constexpr int mqtt_port = 8883; // lub inny port, jeśli twój broker używa innego
     constexpr char mqtt_user[] = "zastąp_to_loginem"; // jezeli nie masz hasla zostaw puste
     constexpr char mqtt_pass[] = "zastąp_to_hasłem";
+    
+    // MQTT tematy 
+    const char topic_capture[] = "???/capture"; // zmień "???" np "kamera/dzialka/esp/capture" 
+    const char topic_foto[] = "???/foto";
+    const char topic_timestamp[] = "???/timestamp";
+    const char topic_temp[] = "???/temp";
+    const char topic_set_all[] = "???/set/#";
 }
