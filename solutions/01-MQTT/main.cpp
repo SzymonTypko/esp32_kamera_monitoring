@@ -1,16 +1,18 @@
 #include <Arduino.h>
 #include <WiFi.h>
-#include <WiFiClientSecure.h>
 #include "config.h"
 #include "camera_handler.h"
-
-WiFiClientSecure espClient;
+#include "mqtt_handler.h"
 
 void setup() {
   Serial.begin(115200);
   delay(1000); 
   
   SprawdzPSRAM();
+
+  // tu pewnie inicjacja kamery
+
+  // ps_malloc dla wykrywania ruchu w przyszlosci
 
   // Połączenie Wi-Fi
   WiFi.mode(WIFI_STA);
@@ -21,16 +23,11 @@ void setup() {
   }
   Serial.println("\nWi-Fi Połączone. IP: " + WiFi.localIP().toString());
 
-  espClient.setInsecure(); // bez SSL
-
-  pinMode(LED_BUILTIN, OUTPUT);
+  mqttSetup();
 }
 
 void loop() {
-  digitalWrite(LED_BUILTIN, HIGH);
-  delay(500);
-  digitalWrite(LED_BUILTIN, LOW);
-  delay(500);
+  mqttLoop();
 
 }
 
