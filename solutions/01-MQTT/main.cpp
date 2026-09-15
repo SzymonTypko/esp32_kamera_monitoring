@@ -10,7 +10,11 @@ void setup() {
   
   SprawdzPSRAM();
 
-  // tu pewnie inicjacja kamery
+  // Inicjalizacja kamery
+  if (!initCamera()) {
+    Serial.println("Nie udalo sie zainicjalizowac kamery");
+    while (true) { delay(1000); }
+  }
 
   // ps_malloc dla wykrywania ruchu w przyszlosci
 
