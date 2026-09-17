@@ -6,6 +6,7 @@
 #include "config.h"
 #include "mqtt_handler.h"
 #include "camera_handler.h"
+#include "servo_handler.h"
 
 WiFiClientSecure espClient;
 PubSubClient client(espClient);
@@ -27,7 +28,6 @@ void reconnect() {
 	}
 }
 
-
 void takeAndSendPhoto() {
   Serial.println("[KAMERA] Robię zdjęcie...");
   camera_fb_t* fb = esp_camera_fb_get();
@@ -37,7 +37,7 @@ void takeAndSendPhoto() {
     Serial.println("[KAMERA] Błąd pobierania ramki z kamery");
     return;
   }
-  Serial.printf("[KAMERA] Zdjęcie zrobione! Rozmiar JPEG: %u B\n", fb->len);
+  Serial.printf("[KAMERA] Zdjęcie zrobione. Rozmiar JPEG: %u B\n", fb->len);
 
   String base64Prefix = "data:image/jpeg;base64,";
   size_t prefixLen = base64Prefix.length();
@@ -58,12 +58,12 @@ void takeAndSendPhoto() {
     mbedtls_base64_encode((unsigned char*)(payloadBuffer + prefixLen), base64DataLen + 1, &written, fb->buf, fb->len);
     payloadBuffer[totalPayloadLen] = '\0';
     Serial.printf("[MQTT] Wysyłam Base64 (Łącznie: %u B)...\n", totalPayloadLen);
-
+    // Wysyłanie w chunkach 1024, aby uniknąć problemów z buforem
+    constexpr size_t chunkSize = 1024;
     bool success = client.beginPublish(MQTTConfig::topic_foto, totalPayloadLen, true);
     if (success) {
       const uint8_t* payload = (const uint8_t*)payloadBuffer;
       size_t bytesSent = 0;
-      constexpr size_t chunkSize = 1024;
       while (bytesSent < totalPayloadLen) {
         size_t bytesToSend = min(chunkSize, totalPayloadLen - bytesSent);
         size_t writtenChunk = client.write(payload + bytesSent, bytesToSend);
@@ -78,7 +78,7 @@ void takeAndSendPhoto() {
       }
     }
     if (success) {
-      Serial.println("[MQTT] Zdjęcie wysłane pomyślnie!");
+      Serial.println("[MQTT] Zdjęcie wysłane pomyślnie");
       unsigned long totalSec = millis() / 1000;
       unsigned long min = (totalSec / 60) % 60;
       unsigned long hrs = totalSec / 3600;
@@ -105,22 +105,24 @@ void callback(char* topic, byte* payload, unsigned int length) {
   }
   Serial.printf("[MQTT] Odebrano komendę na [%s]: %s\n", topic, message.c_str());
   String top = String(topic);
+  sensor_t* s = esp_camera_sensor_get();
+
   if (top.endsWith("/capture")) {
     takeAndSendPhoto();
   } else if (top.endsWith("/brightness")) {
-    // ustaw jasność
+    s->set_brightness(s, message.toInt() - 2);  // [0 ; 4] -> [-2 ; 2] // u mnie na cliencie nie da sie ustawic wartosci ujemnych wiec konwertuje
   } else if (top.endsWith("/contrast")) {
-    // ustaw kontrast
+    s->set_contrast(s, message.toInt() - 2);  // [0 ; 4] -> [-2 ; 2]
   } else if (top.endsWith("/saturation")) {
-    // ustaw nasycenie
+    s->set_saturation(s, message.toInt() - 2);  // [0 ; 4] -> [-2 ; 2]
   } else if (top.endsWith("/sharpness")) {
-    // ustaw ostrość
+    s->set_sharpness(s, message.toInt() - 2);  // [0 ; 4] -> [-2 ; 2]
   } else if (top.endsWith("/quality")) {
-    // ustaw jakość
+    s->set_quality(s, message.toInt());            // [10 ; 63]
   } else if (top.endsWith("/rotate_left")) {
-    // obracaj serwo w lewo
+    move_servo(ServoConfig::pan_servo_pin, ServoConfig::rotate_left, ServoConfig::rotation_delay);
   } else if (top.endsWith("/rotate_right")) {
-    // obracaj w prawo
+    move_servo(ServoConfig::pan_servo_pin, ServoConfig::rotate_right, ServoConfig::rotation_delay);
   }
 }
 
