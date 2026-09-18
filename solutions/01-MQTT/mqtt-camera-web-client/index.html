@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Podgląd Kamery - Działka</title>
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h2>Panel sterowania kamery</h2>
+    <div id="status"></div>
+  </header>
+
+  <div class="img-container">
+    <img id="cameraImage" src="" alt="" />
+  </div>
+
+  <div class="controls">
+    <button class="btn" onclick="">Zrób zdjęcie</button>
+    <button class="btn" onclick="">Obróć w Lewo</button>
+    <button class="btn" onclick="">Obróć w Prawo</button>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
