@@ -16,3 +16,24 @@ client.on("connect", () => {
   statusEl.style.color = "#4caf50";
   client.subscribe(topics.foto);
 });
+
+client.on("message", (topic, message) => {
+  if (topic === topics.foto) {
+    const base64Data = message.toString();
+    imgEl.src = base64Data;
+
+    const now = new Date();
+    statusEl.innerText = "Odebrano zdjęcie: " + now.toLocaleTimeString();
+    statusEl.style.color = "#2196f3";
+  }
+});
+
+client.on("error", (err) => {
+  statusEl.innerText = "Błąd połączenia: " + err.message;
+  statusEl.style.color = "#f44336";
+});
+
+client.on("offline", () => {
+  statusEl.innerText = "Rozłączono.";
+  statusEl.style.color = "#ff9800";
+});
