@@ -73,3 +73,14 @@ namespace CameraConfig {
     constexpr default_camera_pid_t default_camera_pid = OV3660_PID; // to też
     constexpr bool vflip = true; //ustawienie pionowego odbicia obrazu
 }
+
+namespace ServoConfig {
+    // ja mam serwo SG90, które jest 360 stopniowe jak ma sie 180 stopniowe to jest troche wygodniej 
+    constexpr int pan_servo_pin = A10; // GPIO9 mozna zmienić na inny pin 
+    constexpr int rotation_delay = 400;   // jak dlugo serwo ma się obracać w jedną stronę (u mnie to jest mniej wiecej 45 stopni bez obciążenia)
+    // moje serwo nie rusza sie na 90 a na 94 i 97 zaczyna sie obracać powoli w lewo i prawo
+    constexpr int no_rotation = 94;
+    constexpr int rotate_right = 90;
+    constexpr int rotate_left = 97;
+    // z serwem 180 wystarczy ustawić kąt np na suwaku w kliencie i np attach()->write(kąt)->detach() a mi by sie wtedy obracało w nieskończoność ;c
+}
