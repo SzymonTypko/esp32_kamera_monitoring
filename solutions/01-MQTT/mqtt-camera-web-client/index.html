@@ -19,10 +19,10 @@
   </div>
 
   <div class="controls">
-    <button class="btn capture" onclick="">Zrób zdjęcie</button>
+    <button class="btn capture" onclick="sendControl(appConfig.topics.capture, 'capture')">Zrób zdjęcie</button>
     <div class="rotation-buttons">
-      <button class="btn" onclick="">Obróć w lewo</button>
-      <button class="btn" onclick="">Obróć w prawo</button>
+      <button class="btn" onclick="sendControl(appConfig.topics.rotateLeft, 'left')">Obróć w lewo</button>
+      <button class="btn" onclick="sendControl(appConfig.topics.rotateRight, 'right')">Obróć w prawo</button>
     </div>
   </div>
 

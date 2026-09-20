@@ -37,3 +37,17 @@ client.on("offline", () => {
   statusEl.innerText = "Rozłączono.";
   statusEl.style.color = "#ff9800";
 });
+
+function sendControl(topic, payload) {
+  if (client && client.connected) {
+    client.publish(topic, payload, (err) => {
+      if (err) {
+        console.error("Błąd wysyłania komendy:", err);
+      } else {
+        console.log(`Wysłano '${payload}' na topic '${topic}'`);
+      }
+    });
+  } else {
+    alert("Brak połączenia z serwerem MQTT");
+  }
+}
