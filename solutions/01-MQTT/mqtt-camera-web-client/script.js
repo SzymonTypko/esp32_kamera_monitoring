@@ -51,3 +51,8 @@ function sendControl(topic, payload) {
     alert("Brak połączenia z serwerem MQTT");
   }
 }
+
+function updateSetting(input, topic, outputId) {
+  document.getElementById(outputId).value = input.value;
+  sendControl(topic, input.value);
+}

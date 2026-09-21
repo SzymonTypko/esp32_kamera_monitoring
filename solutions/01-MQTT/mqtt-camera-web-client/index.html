@@ -24,6 +24,34 @@
       <button class="btn" onclick="sendControl(appConfig.topics.rotateLeft, 'left')">Obróć w lewo</button>
       <button class="btn" onclick="sendControl(appConfig.topics.rotateRight, 'right')">Obróć w prawo</button>
     </div>
+
+    <div class="camera-settings">
+      <label class="setting">
+        <span>Jasność: <output id="brightnessValue">2</output></span>
+        <input id="brightness" type="range" min="0" max="4" step="1" value="2"
+          oninput="updateSetting(this, appConfig.topics.brightness, 'brightnessValue')">
+      </label>
+      <label class="setting">
+        <span>Kontrast: <output id="contrastValue">2</output></span>
+        <input id="contrast" type="range" min="0" max="4" step="1" value="2"
+          oninput="updateSetting(this, appConfig.topics.contrast, 'contrastValue')">
+      </label>
+      <label class="setting">
+        <span>Nasycenie: <output id="saturationValue">2</output></span>
+        <input id="saturation" type="range" min="0" max="4" step="1" value="2"
+          oninput="updateSetting(this, appConfig.topics.saturation, 'saturationValue')">
+      </label>
+      <label class="setting">
+        <span>Ostrość: <output id="sharpnessValue">2</output></span>
+        <input id="sharpness" type="range" min="0" max="4" step="1" value="2"
+          oninput="updateSetting(this, appConfig.topics.sharpness, 'sharpnessValue')">
+      </label>
+      <label class="setting">
+        <span>Jakość: <output id="qualityValue">12</output></span>
+        <input id="quality" type="range" min="10" max="63" step="1" value="12"
+          oninput="updateSetting(this, appConfig.topics.quality, 'qualityValue')">
+      </label>
+    </div>
   </div>
 
   <script src="config.js"></script>

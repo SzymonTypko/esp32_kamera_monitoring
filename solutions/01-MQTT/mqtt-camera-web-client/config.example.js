@@ -10,6 +10,11 @@ window.appConfig = {
     foto: "",
     capture: "",
     rotateLeft: "",
-    rotateRight: ""
+    rotateRight: "",
+    brightness: "",
+    contrast: "",
+    saturation: "",
+    sharpness: "",
+    quality: ""
   }
 };

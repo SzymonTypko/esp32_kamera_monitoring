@@ -65,6 +65,32 @@ img {
   width: 100%;
 }
 
+.camera-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 24px;
+  text-align: left;
+}
+
+.setting {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #ddd;
+}
+
+.setting output {
+  color: #90caf9;
+  font-weight: bold;
+}
+
+.setting input {
+  width: 100%;
+  accent-color: #2196f3;
+  cursor: pointer;
+}
+
 .btn:hover {
   background: #1976d2;
 }
