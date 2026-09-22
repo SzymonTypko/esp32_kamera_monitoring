@@ -3,6 +3,7 @@
 #include "config.h"
 #include "camera_handler.h"
 #include "mqtt_handler.h"
+#include "utility.h"
 
 void setup() {
   Serial.begin(115200);
@@ -28,10 +29,12 @@ void setup() {
   Serial.println("\nWi-Fi Połączone. IP: " + WiFi.localIP().toString());
 
   mqttSetup();
+
+  //setInterval(czas, lambda lub funkcja void); // przyda sie potem np do wysylania temperatury kamery co jakis czas i motion checka
 }
 
 void loop() {
   mqttLoop();
-
+  runIntervals();
 }
 
