@@ -30,7 +30,7 @@ void setup() {
 
   mqttSetup();
 
-  //setInterval(czas, lambda lub funkcja void); // przyda sie potem np do wysylania temperatury kamery co jakis czas i motion checka
+  setInterval(5*60000, getTempAndSend); // wysylaj temperaturę co 5 minut
 }
 
 void loop() {

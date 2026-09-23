@@ -84,3 +84,7 @@ namespace ServoConfig {
     constexpr int rotate_left = 97;
     // z serwem 180 wystarczy ustawić kąt np na suwaku w kliencie i np attach()->write(kąt)->detach() a mi by sie wtedy obracało w nieskończoność ;c
 }
+
+namespace TempConfig {
+    constexpr float temp_send_interval = 5 * 60000; // co ile wysyłać temperaturę w ms
+}

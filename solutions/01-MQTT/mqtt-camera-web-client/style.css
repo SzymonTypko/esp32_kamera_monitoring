@@ -1,63 +1,126 @@
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 body {
-  padding: 16px;
-  background: #121212;
-  color: #ffffff;
-  font-family: system-ui, sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   min-height: 100vh;
+  height: 100vh;
+  padding: 8px;
+  background: #121212;
+  color: #fff;
+  font-family: system-ui, sans-serif;
+  overflow: hidden;
 }
 
-header {
-  margin-bottom: 16px;
-  text-align: center;
+.dashboard {
+  width: 100%;
+  height: calc(100vh - 16px);
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
 }
 
-#status {
-  margin-top: 6px;
-  color: #ff9800;
-  font-size: 0.9rem;
+.image-panel,
+.sidebar {
+  background: #1b1b1b;
+  border: 0;
+  border-radius: 0;
+}
+
+.image-panel {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0;
+  height: 100%;
 }
 
 .img-container {
   width: 100%;
-  max-width: 1000px;
-  overflow: hidden;
+  height: 100%;
+  max-width: 100%;
+  background: #000;
   border: 1px solid #333;
   border-radius: 8px;
-  background: #000;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 img {
-  width: 100%;
-  height: auto;
   display: block;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.sidebar {
+  flex: 0 0 320px;
+  min-width: 260px;
+  padding: 0;
+  height: 100%;
+  overflow: auto;
+}
+
+.panel-header {
+  margin: 12px;
+}
+
+.panel-header h2 {
+  font-size: 1.3rem;
+  margin-bottom: 4px;
+}
+
+#status {
+  color: #ff9800;
+  font-size: 0.9rem;
+}
+
+.panel-section {
+  background: #171717;
+  border: 1px solid #2d2d2d;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.panel-section summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 12px 14px;
+  font-weight: 700;
+  background: #222;
+  color: #f3f3f3;
+}
+
+.controls,
+.camera-settings {
+  padding: 12px 14px 14px;
 }
 
 .controls {
-  width: 100%;
-  max-width: 1000px;
-  margin-top: 16px;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .rotation-buttons {
   display: flex;
-  gap: 12px;
-  margin-top: 12px;
+  gap: 8px;
 }
 
 .btn {
   flex: 1;
-  padding: 12px 16px;
+  padding: 10px 12px;
   border: 0;
   border-radius: 6px;
   background: #2196f3;
-  color: white;
-  font-weight: bold;
+  color: #fff;
+  font-weight: 700;
   cursor: pointer;
 }
 
@@ -68,9 +131,7 @@ img {
 .camera-settings {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  margin-top: 24px;
-  text-align: left;
+  gap: 12px;
 }
 
 .setting {
@@ -82,24 +143,44 @@ img {
 
 .setting output {
   color: #90caf9;
-  font-weight: bold;
+  font-weight: 700;
 }
 
 .setting input {
   width: 100%;
   accent-color: #2196f3;
-  cursor: pointer;
 }
 
-.btn:hover {
-  background: #1976d2;
-}
+@media (max-width: 800px) {
+  body {
+    height: auto;
+    overflow: auto;
+  }
 
-.btn:active {
-  transform: scale(0.98);
+  .dashboard {
+    height: auto;
+    flex-direction: column;
+  }
+
+  .image-panel,
+  .sidebar {
+    width: 100%;
+    flex-basis: auto;
+    min-width: 0;
+    height: auto;
+  }
+
+  .img-container,
+  img {
+    height: auto;
+  }
 }
 
 @media (max-width: 500px) {
+  body {
+    padding: 12px;
+  }
+
   .rotation-buttons {
     flex-direction: column;
   }

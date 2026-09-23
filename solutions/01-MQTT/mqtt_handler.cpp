@@ -141,3 +141,10 @@ void mqttLoop() {
 	}
 	client.loop();
 }
+
+void getTempAndSend() {
+  float temp = temperatureRead();
+  Serial.print("[MQTT] Wysylam temperature: ");
+  Serial.println(temp);
+  client.publish(MQTTConfig::topic_temp, String(temp, 3).c_str());
+}
