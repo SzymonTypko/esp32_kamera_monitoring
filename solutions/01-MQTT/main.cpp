@@ -30,7 +30,7 @@ void setup() {
 
   mqttSetup();
 
-  setInterval(5*60000, getTempAndSend); // wysylaj temperaturę co 5 minut
+  setInterval(TempConfig::temp_send_interval, getTempAndSend); // wysylaj temperaturę co 5 minut
 }
 
 void loop() {
