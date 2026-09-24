@@ -88,3 +88,8 @@ namespace ServoConfig {
 namespace TempConfig {
     constexpr float temp_send_interval = 5 * 60000; // co ile wysyłać temperaturę w ms
 }
+
+namespace HusarnetConfig {
+    constexpr char husarnet_host_name[] = ""; // Zmień na swój własny identyfikator sieci Husarnet
+    constexpr char husarnet_join_token[] = ""; // Token dołączenia do sieci Husarnet (na dashboardzie pod "copy claim code")
+}
