@@ -39,6 +39,31 @@ void handleRoot() {
   server.send(200, "text/html", STRONA);
 }
 
+void handleStream() {
+  WiFiClient client = server.client();
+  String response = "HTTP/1.1 200 OK\r\n";
+  response += "Content-Type: multipart/x-mixed-replace; boundary=frame\r\n\r\n";
+  server.sendContent(response);
+  while (client.connected()) {
+    camera_fb_t * fb = esp_camera_fb_get();
+    if (!fb) {
+      Serial.println("Błąd: Nie można pobrać klatki z kamery");
+      break;
+    }
+
+    if (fb->format == PIXFORMAT_JPEG) {
+      String frameHeader = "--frame\r\n";
+      frameHeader += "Content-Type: image/jpeg\r\n";
+      frameHeader += "Content-Length: " + String(fb->len) + "\r\n\r\n";
+      server.sendContent(frameHeader);
+      client.write(fb->buf, fb->len);
+      server.sendContent("\r\n");
+    }
+    esp_camera_fb_return(fb);
+    delay(1);
+  }
+}
+
 void husarnetSetup() {
   husarnet.join(HusarnetConfig::husarnet_host_name, HusarnetConfig::husarnet_join_token);
   Serial.println("[HUSAR] Łączenie z siecią Husarnet...");
