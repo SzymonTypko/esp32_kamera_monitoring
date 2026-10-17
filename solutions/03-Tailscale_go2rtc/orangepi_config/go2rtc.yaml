@@ -1,0 +1,11 @@
+# Umieść ten plik w /etc na twoim urządzeniu
+streams:
+  esp_cam:
+    - http://xxx.xx.xxx.xxx:80/stream  # Zamień na adres IP kamery ESP w sieci lokalnej
+
+api:
+  listen: "127.0.0.1:1984"
+  static_dir: "/etc/go2rtc_web"
+  username: "zamien_to_na_wlasny_login"
+  password: "zamien_to_na_wlasne_haslo"
+  local_auth: true
