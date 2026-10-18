@@ -1,7 +1,11 @@
 # Umieść ten plik w /etc na twoim urządzeniu
 streams:
-  esp_cam:
+  esp_cam: # stream z kamery esp32
     - http://xxx.xx.xxx.xxx:80/stream  # Zamień na adres IP kamery ESP w sieci lokalnej
+
+  toggle_led: # endpoint do przełączania diody LED na esp32 - tak niby sie nie powinno robić ale nie chce dodawac dodatkowego przekaźnika na OrangePi
+    - http://xxx.xx.xxx.xxx:80/toggle_led
+
 
 api:
   listen: "127.0.0.1:1984"

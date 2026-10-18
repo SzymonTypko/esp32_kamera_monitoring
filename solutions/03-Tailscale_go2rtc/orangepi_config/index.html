@@ -1,4 +1,3 @@
-<!-- Umieść ten plik w /etc/go2rtc_web -->
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -7,6 +6,7 @@
     <title>Stream</title>
     <style>
         body {
+            font-family: Arial, sans-serif;
             background-color: #1e1e1e;
             color: #ffffff;
             margin: 0;
@@ -21,7 +21,7 @@
             font-size: 24px;
         }
         .stream-container {
-            border: 4px solid #14f3ff;
+            border: 4px solid #00adb5;
             border-radius: 8px;
             overflow: hidden;
             max-width: 90%;
@@ -36,25 +36,57 @@
     </style>
 </head>
 <body>
-
+    
     <h1>Podgląd na żywo</h1>
     <div class="stream-container">
         <img
-            src="/api/stream.mjpeg?src=esp_cam"
-            alt="Podgląd z kamery"
-            id="camera">
+        src="/api/stream.mjpeg?src=esp_cam"
+        alt="Podgląd z kamery"
+        id="camera">
+    </div>
+    <div class="stream-control">
+        <button id="streamButton" onclick="toggleStream()">Wyłącz stream</button>
+    </div>
+    <div class="led-control">
+        <button id="ledButton" onclick="toggleLED()">Zmień stan LEDa</button>
     </div>
     <script>
         const camera = document.getElementById("camera");
+        const stream_control = document.getElementById("streamButton");
+        let streamstate = true;
         const streamUrl = "/api/stream.mjpeg?src=esp_cam";
-
+        
         window.addEventListener("pagehide", () => {
-                camera.removeAttribute("src");
+            camera.removeAttribute("src");
         });
-
+        
         window.addEventListener("pageshow", () => {
-                camera.src = streamUrl;
+            camera.src = streamUrl;
         });
+        
+        function toggleStream() {
+            if(streamstate){
+                camera.src = "";
+                stream_control.innerHTML = "Włącz stream";
+            }
+            else{
+                camera.src = streamUrl;
+                stream_control.innerHTML = "Wyłącz stream";
+            }
+            streamstate = !streamstate
+        }
+
+        function toggleLED() {
+            //fetch('/api/stream.mjpeg?src=toggle_led')
+            // to mi sie wydaje bardziej eleganckie niz stream.mjpeg jak nie chce dodawac jakiegos przekaznika po stronie OrangePi
+            fetch('/api/frame.jpeg?src=toggle_led') 
+            .then(response => response.text())
+            .then(state => {
+                console.log('Stan diody:', state);
+            })
+            .catch(err => console.error('Błąd połączenia z LED:', err));
+            
+        }
     </script>
 </body>
 </html>
