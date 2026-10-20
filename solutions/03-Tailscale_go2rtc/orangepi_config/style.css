@@ -1,0 +1,198 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  height: 100vh;
+  padding: 8px;
+  background: #121212;
+  color: #fff;
+  font-family: system-ui, sans-serif;
+  overflow: hidden;
+}
+
+.dashboard {
+  width: 100%;
+  height: calc(100vh - 16px);
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.image-panel,
+.sidebar {
+  background: #1b1b1b;
+  border: 0;
+  border-radius: 0;
+}
+
+.image-panel {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0;
+  height: 100%;
+}
+
+.img-container {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  background: #000;
+  border: 1px solid #333;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.sidebar {
+  flex: 0 0 320px;
+  min-width: 260px;
+  padding: 0;
+  height: 100%;
+  overflow: auto;
+}
+
+.panel-header {
+  margin: 12px;
+}
+
+.panel-header h2 {
+  font-size: 1.3rem;
+  margin-bottom: 4px;
+}
+
+#status {
+  color: #ff9800;
+  font-size: 0.9rem;
+}
+
+.panel-section {
+  background: #171717;
+  border: 1px solid #2d2d2d;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.panel-section summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 12px 14px;
+  font-weight: 700;
+  background: #222;
+  color: #f3f3f3;
+}
+
+.controls,
+.camera-settings {
+  padding: 12px 14px 14px;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rotation-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  flex: 1;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 6px;
+  background: #2196f3;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.capture {
+  width: 100%;
+}
+
+.camera-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.setting {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #ddd;
+}
+
+.setting-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.setting-button {
+  min-width: 48px;
+  padding: 6px 12px;
+  font-size: 1.1rem;
+}
+
+.setting-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.setting output {
+  color: #90caf9;
+  font-weight: 700;
+}
+
+@media (max-width: 800px) {
+  body {
+    height: auto;
+    overflow: auto;
+  }
+
+  .dashboard {
+    height: auto;
+    flex-direction: column;
+  }
+
+  .image-panel,
+  .sidebar {
+    width: 100%;
+    flex-basis: auto;
+    min-width: 0;
+    height: auto;
+  }
+
+  .img-container,
+  img {
+    height: auto;
+  }
+}
+
+@media (max-width: 500px) {
+  body {
+    padding: 12px;
+  }
+
+  .rotation-buttons {
+    flex-direction: column;
+  }
+}

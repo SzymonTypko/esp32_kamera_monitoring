@@ -4,89 +4,81 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stream</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #1e1e1e;
-            color: #ffffff;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-        h1 {
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
-        .stream-container {
-            border: 4px solid #00adb5;
-            border-radius: 8px;
-            overflow: hidden;
-            max-width: 90%;
-            background: #000;
-        }
-        img {
-            display: block;
-            width: 100%;
-            height: auto;
-            max-height: 75vh;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    
-    <h1>Podgląd na żywo</h1>
-    <div class="stream-container">
-        <img
-        src="/api/stream.mjpeg?src=esp_cam"
-        alt="Podgląd z kamery"
-        id="camera">
-    </div>
-    <div class="stream-control">
-        <button id="streamButton" onclick="toggleStream()">Wyłącz stream</button>
-    </div>
-    <div class="led-control">
-        <button id="ledButton" onclick="toggleLED()">Zmień stan LEDa</button>
-    </div>
-    <script>
-        const camera = document.getElementById("camera");
-        const stream_control = document.getElementById("streamButton");
-        let streamstate = true;
-        const streamUrl = "/api/stream.mjpeg?src=esp_cam";
+    <div class="dashboard">
+        <section class="image-panel">
+            <div class="img-container">
+                <img
+                src=""
+                alt="Podgląd z kamery"
+                id="cameraImage">
+            </div>
+        </section>
         
-        window.addEventListener("pagehide", () => {
-            camera.removeAttribute("src");
-        });
-        
-        window.addEventListener("pageshow", () => {
-            camera.src = streamUrl;
-        });
-        
-        function toggleStream() {
-            if(streamstate){
-                camera.src = "";
-                stream_control.innerHTML = "Włącz stream";
-            }
-            else{
-                camera.src = streamUrl;
-                stream_control.innerHTML = "Wyłącz stream";
-            }
-            streamstate = !streamstate
-        }
-
-        function toggleLED() {
-            //fetch('/api/stream.mjpeg?src=toggle_led')
-            // to mi sie wydaje bardziej eleganckie niz stream.mjpeg jak nie chce dodawac jakiegos przekaznika po stronie OrangePi
-            fetch('/api/frame.jpeg?src=toggle_led') 
-            .then(response => response.text())
-            .then(state => {
-                console.log('Stan diody:', state);
-            })
-            .catch(err => console.error('Błąd połączenia z LED:', err));
+        <aside class="sidebar">
+            <header class="panel-header">
+                <h2>Panel sterowania kamery</h2>
+                <div id="status" role="status" aria-live="polite"></div>
+            </header>
             
-        }
-    </script>
+            <details class="panel-section" open>
+                <summary>Sterowanie</summary>
+                <div class="controls">
+                    <button class="btn" id="streamButton" type="button">Wyłącz stream</button>
+                    <button class="btn" id="ledButton" type="button">Przełącz diodę LED</button>
+                    <div class="rotation-buttons">
+                        <button class="btn" id="rotateLeftButton" type="button">Obróć w lewo</button>
+                        <button class="btn" id="rotateRightButton" type="button">Obróć w prawo</button>
+                    </div>
+                </div>
+            </details>
+            
+            <details class="panel-section" open>
+                <summary>Ustawienia kamery</summary>
+                <div class="camera-settings">
+                    <div class="setting" data-setting="brightness">
+                        <span>Jasność: <output id="brightnessValue">2</output></span>
+                        <div class="setting-controls">
+                            <button class="btn setting-button" type="button" data-action="decrease" aria-label="Zmniejsz jasność">−</button>
+                            <button class="btn setting-button" type="button" data-action="increase" aria-label="Zwiększ jasność">+</button>
+                        </div>
+                    </div>
+                    <div class="setting" data-setting="contrast">
+                        <span>Kontrast: <output id="contrastValue">2</output></span>
+                        <div class="setting-controls">
+                            <button class="btn setting-button" type="button" data-action="decrease" aria-label="Zmniejsz kontrast">−</button>
+                            <button class="btn setting-button" type="button" data-action="increase" aria-label="Zwiększ kontrast">+</button>
+                        </div>
+                    </div>
+                    <div class="setting" data-setting="saturation">
+                        <span>Nasycenie: <output id="saturationValue">2</output></span>
+                        <div class="setting-controls">
+                            <button class="btn setting-button" type="button" data-action="decrease" aria-label="Zmniejsz nasycenie">−</button>
+                            <button class="btn setting-button" type="button" data-action="increase" aria-label="Zwiększ nasycenie">+</button>
+                        </div>
+                    </div>
+                    <div class="setting" data-setting="sharpness">
+                        <span>Ostrość: <output id="sharpnessValue">2</output></span>
+                        <div class="setting-controls">
+                            <button class="btn setting-button" type="button" data-action="decrease" aria-label="Zmniejsz ostrość">−</button>
+                            <button class="btn setting-button" type="button" data-action="increase" aria-label="Zwiększ ostrość">+</button>
+                        </div>
+                    </div>
+                    <div class="setting" data-setting="quality">
+                        <span>Jakość: <output id="qualityValue">12</output></span>
+                        <div class="setting-controls">
+                            <button class="btn setting-button" type="button" data-action="decrease" aria-label="Zmniejsz jakość">−</button>
+                            <button class="btn setting-button" type="button" data-action="increase" aria-label="Zwiększ jakość">+</button>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </aside>
+    </div>
+    
+    <script src="config.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
