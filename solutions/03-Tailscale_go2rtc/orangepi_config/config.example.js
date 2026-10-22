@@ -1,4 +1,4 @@
-// przykladowy config  nie polecam zmieniac settingLimits a zalecam zmieniac settingValues w zaleznosci od potrzeb
+// Zmieniaj settingValues w zaleznosci od potrzeb.
 
 window.appConfig = {
   streamUrl: "/api/stream.mjpeg?src=esp_cam",
@@ -35,12 +35,5 @@ window.appConfig = {
     saturation: 2,
     sharpness: 2,
     quality: 12
-  },
-  settingLimits: {
-    brightness: { min: 0, max: 4 },
-    contrast: { min: 0, max: 4 },
-    saturation: { min: 0, max: 4 },
-    sharpness: { min: 0, max: 4 },
-    quality: { min: 10, max: 63 }
   }
 };

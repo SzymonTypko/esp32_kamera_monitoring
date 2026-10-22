@@ -24,7 +24,7 @@ bool initCamera() {
 
   if (psramFound()) {
     config_camera.frame_size = static_cast<framesize_t>(CameraConfig::default_frame_size);
-    config_camera.jpeg_quality = 10;  //0 - 63 nie zchodzic ponizej 10 bo bedzie za duzo danych do wyslania
+    config_camera.jpeg_quality = 12;  //0 - 63 nie zchodzic ponizej 10 bo bedzie za duzo danych do wyslania
     config_camera.fb_count = 2;
     config_camera.grab_mode = CAMERA_GRAB_LATEST;
     config_camera.fb_location = CAMERA_FB_IN_PSRAM;

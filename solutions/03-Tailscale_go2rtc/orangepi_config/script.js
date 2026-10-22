@@ -9,7 +9,7 @@ function sendRequest(url, description) {
   if (!url) {
     statusElement.textContent = `Brak endpointu: ${description}`;
     statusElement.style.color = "#f44336";
-    return Promise.resolve(false);
+    return Promise.resolve({ success: false, status: null });
   }
 
   statusElement.textContent = `Wysyłanie: ${description}...`;
@@ -18,17 +18,20 @@ function sendRequest(url, description) {
   return fetch(url)
     .then((response) => {
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+        statusElement.textContent = `Błąd: ${description}.`;
+        statusElement.style.color = "#f44336";
+        console.error(`Błąd żądania (${description}): HTTP ${response.status}`);
+        return { success: false, status: response.status };
       }
       statusElement.textContent = `Wysłano: ${description}.`;
       statusElement.style.color = "#4caf50";
-      return true;
+      return { success: true, status: response.status };
     })
     .catch((error) => {
       statusElement.textContent = `Błąd: ${description}.`;
       statusElement.style.color = "#f44336";
       console.error(`Błąd żądania (${description}):`, error);
-      return false;
+      return { success: false, status: null };
     });
 }
 
@@ -56,35 +59,34 @@ function rotateCamera(direction) {
 
 function changeSetting(settingName, action, button) {
   const value = appConfig.settingValues[settingName];
-  const limits = appConfig.settingLimits[settingName];
   const nextValue = value + (action == "increase" ? 1 : -1);
 
-  if (settingUpdatesInProgress.has(settingName) ||
-      nextValue < limits.min || nextValue > limits.max) {
+  if (settingUpdatesInProgress.has(settingName)) {
     return;
   }
 
   settingUpdatesInProgress.add(settingName);
   button.disabled = true;
   sendRequest(appConfig.endpoints.settings[settingName][action], `${settingName}: ${nextValue}`)
-    .then((success) => {
-      settingUpdatesInProgress.delete(settingName);
-      button.disabled = false;
-
-      if (success) {
+    .then((result) => {
+      if (result.success) {
         appConfig.settingValues[settingName] = nextValue;
         document.getElementById(`${settingName}Value`).value = nextValue;
         updateSettingButtons(settingName);
+      } else {
+        button.disabled = result.status === 400;
       }
+    })
+    .finally(() => {
+      settingUpdatesInProgress.delete(settingName);
     });
 }
 
 function updateSettingButtons(settingName) {
   const setting = document.querySelector(`.setting[data-setting="${settingName}"]`);
-  const value = appConfig.settingValues[settingName];
-  const limits = appConfig.settingLimits[settingName];
-  setting.querySelector('[data-action="decrease"]').disabled = value <= limits.min;
-  setting.querySelector('[data-action="increase"]').disabled = value >= limits.max;
+  setting.querySelectorAll("[data-action]").forEach((button) => {
+    button.disabled = false;
+  });
 }
 
 document.getElementById("streamButton").addEventListener("click", toggleStream);
@@ -100,7 +102,6 @@ document.querySelectorAll(".setting[data-setting]").forEach((setting) => {
       changeSetting(settingName, button.dataset.action, button);
     });
   });
-  updateSettingButtons(settingName);
 });
 
 cameraImage.src = appConfig.streamUrl;
