@@ -3,6 +3,7 @@
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include "camera_handler.h"
 #include "config.h"
@@ -18,14 +19,6 @@ const char *STREAM_CONTENT_TYPE = "multipart/x-mixed-replace; boundary=frame";
 const char *FIRST_BOUNDARY = "--frame\r\n";
 const char *NEXT_BOUNDARY = "\r\n--frame\r\n";
 const char *FRAME_HEADER = "Content-Type: image/jpeg\r\nContent-Length: %u\r\n\r\n";
-
-enum class CameraSetting {
-    Brightness,
-    Contrast,
-    Saturation,
-    Sharpness,
-    Quality
-};
 
 class AsyncMjpegResponse : public AsyncAbstractResponse {
 public:
@@ -57,6 +50,7 @@ public:
         }
 
         if (frame == nullptr) {
+            // tu ewentualnie opoznienie aby zmnieszyc fps
             frame = esp_camera_fb_get();
 
             if (frame == nullptr) {
@@ -155,104 +149,83 @@ void handleToggleLED(AsyncWebServerRequest *request) {
     request->send(200, "application/json", json);
 }
 
-void handleCameraSetting(AsyncWebServerRequest *request, CameraSetting setting, int direction) {
+void handleCameraSetting(AsyncWebServerRequest *request) {
+    if (!request->hasParam("setting") || !request->hasParam("value")) {
+        request->send(400, "text/plain", "Missing setting or value");
+        return;
+    }
+
+    const String settingName = request->getParam("setting")->value();
+    const String valueText = request->getParam("value")->value();
+    char *end = nullptr;
+    const long requestedValue = strtol(valueText.c_str(), &end, 10);
+    if (valueText.isEmpty() || end == valueText.c_str() || *end != '\0') {
+        request->send(400, "text/plain", "Value must be an integer");
+        return;
+    }
+
     sensor_t *sensor = esp_camera_sensor_get();
     if (sensor == nullptr) {
-        Serial.println("Nie mozna zmienic ustawienia: sensor kamery niedostepny");
+        Serial.println("Sensor kamery niedostepny");
         request->send(503, "text/plain", "Camera sensor unavailable");
         return;
     }
 
-    int currentValue;
     int minValue;
     int maxValue;
     int sensorOffset = 0;
     int (*setValue)(sensor_t *, int);
-    const char *settingName;
 
-    switch (setting) {
-        case CameraSetting::Brightness:
-            currentValue = sensor->status.brightness + 2;
-            minValue = 0;
-            maxValue = 4;
-            sensorOffset = 2;
-            setValue = sensor->set_brightness; // bierze funkcje
-            settingName = "brightness";
-            break;
-        case CameraSetting::Contrast:
-            currentValue = sensor->status.contrast + 2;
-            minValue = 0;
-            maxValue = 4;
-            sensorOffset = 2;
-            setValue = sensor->set_contrast;
-            settingName = "contrast";
-            break;
-        case CameraSetting::Saturation:
-            currentValue = sensor->status.saturation + 2;
-            minValue = 0;
-            maxValue = 4;
-            sensorOffset = 2;
-            setValue = sensor->set_saturation;
-            settingName = "saturation";
-            break;
-        case CameraSetting::Sharpness:
-            currentValue = sensor->status.sharpness + 2;
-            minValue = 0;
-            maxValue = 4;
-            sensorOffset = 2;
-            setValue = sensor->set_sharpness;
-            settingName = "sharpness";
-            break;
-        case CameraSetting::Quality:
-            currentValue = sensor->status.quality;
-            minValue = 10;
-            maxValue = 63;
-            setValue = sensor->set_quality;
-            settingName = "quality";
-            break;
+    if (settingName == "brightness") {
+        minValue = 0;
+        maxValue = 4;
+        sensorOffset = 2;
+        setValue = sensor->set_brightness;
+    } else if (settingName == "contrast") {
+        minValue = 0;
+        maxValue = 4;
+        sensorOffset = 2;
+        setValue = sensor->set_contrast;
+    } else if (settingName == "saturation") {
+        minValue = 0;
+        maxValue = 4;
+        sensorOffset = 2;
+        setValue = sensor->set_saturation;
+    } else if (settingName == "sharpness") {
+        minValue = 0;
+        maxValue = 4;
+        sensorOffset = 2;
+        setValue = sensor->set_sharpness;
+    } else if (settingName == "quality") {
+        minValue = 10;
+        maxValue = 63;
+        setValue = sensor->set_quality;
+    } else {
+        request->send(400, "text/plain", "Unknown camera setting");
+        return;
     }
 
-    Serial.printf("Zadanie zmiany %s (%+d)\n", settingName, direction);
-
-    const int nextValue = currentValue + direction;
-    if (nextValue < minValue || nextValue > maxValue) {
-        Serial.printf("Odrzucono %s: wartosc %d poza zakresem %d-%d\n", settingName, nextValue, minValue, maxValue);
+    if (requestedValue < minValue || requestedValue > maxValue) {
+        Serial.printf( "Odrzucono %s: wartosc %ld poza zakresem %d-%d\n", settingName.c_str(), requestedValue, minValue, maxValue);
         request->send(400, "text/plain", "Camera setting is out of range");
         return;
     }
 
     if (setValue == nullptr) {
-        Serial.printf("Nie obslugiwane ustawienie kamery: %s\n", settingName);
+        Serial.printf("Nie obslugiwane ustawienie kamery: %s\n", settingName.c_str());
         request->send(500, "text/plain", "Failed to update camera setting");
         return;
     }
 
-    const int result = setValue(sensor, nextValue - sensorOffset);
+    const int result = setValue(sensor, static_cast<int>(requestedValue) - sensorOffset);
     if (result != 0) {
-        Serial.printf(
-            "Blad zmiany %s na %d, kod: %d\n",
-            settingName,
-            nextValue,
-            result
-        );
+        Serial.printf("Blad zmiany %s na %ld, kod: %d\n", settingName.c_str(), requestedValue, result);
         request->send(500, "text/plain", "Failed to update camera setting");
         return;
     }
 
-    Serial.printf("Ustawiono %s na %d\n", settingName, nextValue);
+    Serial.printf("Ustawiono %s na %ld\n", settingName.c_str(), requestedValue);
     request->send(200, "text/plain", "OK");
-}
-
-void registerCameraSettingRoutes(const char *name, CameraSetting setting) { // dodaje server.on dla up/down dla ustawień kamery
-    String increasePath = String("/") + name + "_up";
-    String decreasePath = String("/") + name + "_down";
-
-    server.on(increasePath.c_str(), HTTP_GET, [setting](AsyncWebServerRequest *request) {
-        handleCameraSetting(request, setting, 1);
-    });
-    server.on(decreasePath.c_str(), HTTP_GET, [setting](AsyncWebServerRequest *request) {
-        handleCameraSetting(request, setting, -1);
-    });
 }
 
 void handleRotateLeft(AsyncWebServerRequest *request) {
@@ -274,13 +247,9 @@ void handleNotFound(AsyncWebServerRequest *request) {
 void asyncWebServerSetup() {
     server.on("/stream", HTTP_GET, handleStream);
     server.on("/toggle_led", HTTP_GET, handleToggleLED);
+    server.on("/set_camera", HTTP_GET, handleCameraSetting);
     server.on("/rotate_left", HTTP_GET, handleRotateLeft);
     server.on("/rotate_right", HTTP_GET, handleRotateRight);
-    registerCameraSettingRoutes("brightness", CameraSetting::Brightness);
-    registerCameraSettingRoutes("contrast", CameraSetting::Contrast);
-    registerCameraSettingRoutes("saturation", CameraSetting::Saturation);
-    registerCameraSettingRoutes("sharpness", CameraSetting::Sharpness);
-    registerCameraSettingRoutes("quality", CameraSetting::Quality);
     server.onNotFound(handleNotFound);
     server.begin();
 

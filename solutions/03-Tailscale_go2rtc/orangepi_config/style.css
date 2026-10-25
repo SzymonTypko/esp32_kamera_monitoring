@@ -143,13 +143,19 @@ img {
 
 .setting-controls {
   display: flex;
+  align-items: center;
   gap: 8px;
 }
 
+.setting-slider {
+  flex: 1;
+  min-width: 0;
+}
+
 .setting-button {
-  min-width: 48px;
+  flex: 0 0 auto;
   padding: 6px 12px;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
 }
 
 .setting-button:disabled {

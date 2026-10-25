@@ -41,36 +41,36 @@
                     <div class="setting" data-setting="brightness">
                         <span>Jasność: <output id="brightnessValue">2</output></span>
                         <div class="setting-controls">
-                            <button class="btn setting-button" type="button" data-action="decrease" aria-label="Zmniejsz jasność">−</button>
-                            <button class="btn setting-button" type="button" data-action="increase" aria-label="Zwiększ jasność">+</button>
+                            <input class="setting-slider" id="brightnessInput" type="range" min="0" max="4" step="1">
+                            <button class="btn setting-button" type="button" data-action="send">Wyślij</button>
                         </div>
                     </div>
                     <div class="setting" data-setting="contrast">
                         <span>Kontrast: <output id="contrastValue">2</output></span>
                         <div class="setting-controls">
-                            <button class="btn setting-button" type="button" data-action="decrease" aria-label="Zmniejsz kontrast">−</button>
-                            <button class="btn setting-button" type="button" data-action="increase" aria-label="Zwiększ kontrast">+</button>
+                            <input class="setting-slider" id="contrastInput" type="range" min="0" max="4" step="1">
+                            <button class="btn setting-button" type="button" data-action="send">Wyślij</button>
                         </div>
                     </div>
                     <div class="setting" data-setting="saturation">
                         <span>Nasycenie: <output id="saturationValue">2</output></span>
                         <div class="setting-controls">
-                            <button class="btn setting-button" type="button" data-action="decrease" aria-label="Zmniejsz nasycenie">−</button>
-                            <button class="btn setting-button" type="button" data-action="increase" aria-label="Zwiększ nasycenie">+</button>
+                            <input class="setting-slider" id="saturationInput" type="range" min="0" max="4" step="1">
+                            <button class="btn setting-button" type="button" data-action="send">Wyślij</button>
                         </div>
                     </div>
                     <div class="setting" data-setting="sharpness">
                         <span>Ostrość: <output id="sharpnessValue">2</output></span>
                         <div class="setting-controls">
-                            <button class="btn setting-button" type="button" data-action="decrease" aria-label="Zmniejsz ostrość">−</button>
-                            <button class="btn setting-button" type="button" data-action="increase" aria-label="Zwiększ ostrość">+</button>
+                            <input class="setting-slider" id="sharpnessInput" type="range" min="0" max="4" step="1">
+                            <button class="btn setting-button" type="button" data-action="send">Wyślij</button>
                         </div>
                     </div>
                     <div class="setting" data-setting="quality">
                         <span>Jakość: <output id="qualityValue">12</output></span>
                         <div class="setting-controls">
-                            <button class="btn setting-button" type="button" data-action="decrease" aria-label="Zmniejsz jakość">−</button>
-                            <button class="btn setting-button" type="button" data-action="increase" aria-label="Zwiększ jakość">+</button>
+                            <input class="setting-slider" id="qualityInput" type="range" min="10" max="63" step="1">
+                            <button class="btn setting-button" type="button" data-action="send">Wyślij</button>
                         </div>
                     </div>
                 </div>

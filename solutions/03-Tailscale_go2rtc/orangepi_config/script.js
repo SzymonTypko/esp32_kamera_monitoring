@@ -57,36 +57,28 @@ function rotateCamera(direction) {
   sendRequest(endpoint, description);
 }
 
-function changeSetting(settingName, action, button) {
-  const value = appConfig.settingValues[settingName];
-  const nextValue = value + (action == "increase" ? 1 : -1);
-
+function changeSetting(settingName, slider, button) {
   if (settingUpdatesInProgress.has(settingName)) {
     return;
   }
 
+  const value = Number(slider.value);
+  const url = new URL(appConfig.endpoints.settings, window.location.href);
+  url.searchParams.set("setting", settingName);
+  url.searchParams.set("value", value);
+
   settingUpdatesInProgress.add(settingName);
   button.disabled = true;
-  sendRequest(appConfig.endpoints.settings[settingName][action], `${settingName}: ${nextValue}`)
+  sendRequest(url, `${settingName}: ${value}`)
     .then((result) => {
       if (result.success) {
-        appConfig.settingValues[settingName] = nextValue;
-        document.getElementById(`${settingName}Value`).value = nextValue;
-        updateSettingButtons(settingName);
-      } else {
-        button.disabled = result.status === 400;
+        appConfig.settingValues[settingName] = value;
       }
     })
     .finally(() => {
       settingUpdatesInProgress.delete(settingName);
+      button.disabled = false;
     });
-}
-
-function updateSettingButtons(settingName) {
-  const setting = document.querySelector(`.setting[data-setting="${settingName}"]`);
-  setting.querySelectorAll("[data-action]").forEach((button) => {
-    button.disabled = false;
-  });
 }
 
 document.getElementById("streamButton").addEventListener("click", toggleStream);
@@ -96,11 +88,22 @@ document.getElementById("rotateRightButton").addEventListener("click", () => rot
 
 document.querySelectorAll(".setting[data-setting]").forEach((setting) => {
   const settingName = setting.dataset.setting;
-  document.getElementById(`${settingName}Value`).value = appConfig.settingValues[settingName];
-  setting.querySelectorAll("[data-action]").forEach((button) => {
-    button.addEventListener("click", () => {
-      changeSetting(settingName, button.dataset.action, button);
-    });
+  const slider = document.getElementById(`${settingName}Input`);
+  const output = document.getElementById(`${settingName}Value`);
+  const limits = appConfig.settingLimits[settingName];
+  const button = setting.querySelector('[data-action="send"]');
+
+  slider.min = limits.min;
+  slider.max = limits.max;
+  slider.value = appConfig.settingValues[settingName];
+  output.value = slider.value;
+
+  slider.addEventListener("input", () => {
+    output.value = slider.value;
+  });
+
+  button.addEventListener("click", () => {
+    changeSetting(settingName, slider, button);
   });
 });
 

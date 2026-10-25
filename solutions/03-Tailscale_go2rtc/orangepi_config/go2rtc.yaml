@@ -1,43 +1,7 @@
 # Umieść ten plik w /etc na twoim urządzeniu
 streams:
-  esp_cam: # stream z kamery esp32
-    - http://xxx.xx.xxx.xxx:80/stream  # Zamień na adres IP kamery ESP w sieci lokalnej
-
-  # to jest bez sensu moze zmienie i dodam plik ktory bedzie przekazywal requesty bo obecnie nie moge dać parametrów.
-  toggle_led: 
-    - http://xxx.xx.xxx.xxx:80/toggle_led
-
-  rotate_left:
-    - http://xxx.xx.xxx.xxx:80/rotate_left
-
-  rotate_right:
-    - http://xxx.xx.xxx.xxx:80/rotate_right
-
-  brightness_up:
-    - http://xxx.xx.xxx.xxx:80/brightness_up
-  brightness_down:
-    - http://xxx.xx.xxx.xxx:80/brightness_down
-
-  contrast_up:
-    - http://xxx.xx.xxx.xxx:80/contrast_up
-  contrast_down:
-    - http://xxx.xx.xxx.xxx:80/contrast_down
-
-  saturation_up:
-    - http://xxx.xx.xxx.xxx:80/saturation_up
-  saturation_down:
-    - http://xxx.xx.xxx.xxx:80/saturation_down
-
-  sharpness_up:
-    - http://xxx.xx.xxx.xxx:80/sharpness_up
-  sharpness_down:
-    - http://xxx.xx.xxx.xxx:80/sharpness_down
-
-  quality_up:
-    - http://xxx.xx.xxx.xxx:80/quality_up
-  quality_down:
-    - http://xxx.xx.xxx.xxx:80/quality_down
-
+  esp_cam:
+    - http://xxx.xx.xxx.xxx:80/stream  # Zmień na adres IP kamery ESP32.
 
 api:
   listen: "127.0.0.1:1984"
