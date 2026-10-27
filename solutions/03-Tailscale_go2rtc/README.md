@@ -114,3 +114,18 @@ Struktura plików:
 Panel wysyła ustawienia w formacie `/control/set_camera?setting=brightness&value=3`. Proxy i firmware sprawdzają dozwolone ustawienia i zakresy: jasność, kontrast, nasycenie i ostrość `0–4`, jakość `10–63`.
 
 Serve udostępnia tylko w twoim tailnecie a Funnel na cały Inetrnet.
+
+### Przydatne aliasy
+
+```bash
+
+alias kamera_consumers_single='curl -s -u "login:haslo" http://127.0.0.1:1984/api/streams | jq ".[ \"esp_cam\" ].consumers[]? | {id: .id, remote_addr: .remote_addr, bytes_send: .senders[0].bytes, packets: .senders[0].packets}"' # ewentualnie jak nie ustawiałeś logowania to bez -u "login:haslo"
+
+alias kamera_consumers_watch='watch -n 3 "curl -s -u \"login:haslo\" http://127.0.0.1:1984/api/streams | jq \".[ \\\"esp_cam\\\" ].consumers[]? | {id: .id, remote_addr: .remote_addr, bytes_send: .senders[0].bytes, packets: .senders[0].packets}\""'
+
+alias kamera_count='curl -s -u "login:haslo" http://127.0.0.1:1984/api/streams | jq "(.[ \"esp_cam\" ].consumers // []) | length"'
+
+alias polaczenie_esp_opi='ss -tnp | grep "xxx.xxx.xx.xx"' #lokalny adres kamery w sieci
+
+
+```

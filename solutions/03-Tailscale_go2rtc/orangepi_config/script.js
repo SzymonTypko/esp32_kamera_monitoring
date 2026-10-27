@@ -37,12 +37,18 @@ function sendRequest(url, description) {
 
 function toggleStream() {
   streamEnabled = !streamEnabled;
-  if (streamEnabled) {
-    cameraImage.src = appConfig.streamUrl;
+  updateStreamVisibility();
+  streamButton.textContent = streamEnabled ? "Wyłącz stream" : "Włącz stream";
+}
+
+function updateStreamVisibility() {
+  if (streamEnabled && document.visibilityState === "visible") {
+    if (!cameraImage.hasAttribute("src")) {
+      cameraImage.src = appConfig.streamUrl;
+    }
   } else {
     cameraImage.removeAttribute("src");
   }
-  streamButton.textContent = streamEnabled ? "Wyłącz stream" : "Włącz stream";
 }
 
 function toggleLED() {
@@ -107,10 +113,7 @@ document.querySelectorAll(".setting[data-setting]").forEach((setting) => {
   });
 });
 
-cameraImage.src = appConfig.streamUrl;
+updateStreamVisibility();
+document.addEventListener("visibilitychange", updateStreamVisibility);
 window.addEventListener("pagehide", () => cameraImage.removeAttribute("src"));
-window.addEventListener("pageshow", () => {
-  if (streamEnabled) {
-    cameraImage.src = appConfig.streamUrl;
-  }
-});
+window.addEventListener("pageshow", updateStreamVisibility);
