@@ -15,7 +15,7 @@ SETTING_LIMITS = {
 }
 
 ALLOWED_COMMANDS = {
-    "toggle_led",
+    "get_temp",
     "rotate_left",
     "rotate_right",
 }

@@ -6,9 +6,6 @@
 #include "async_webserver_handler.h"
 
 void setup() {
-    digitalWrite(LED_BUILTIN, HIGH);
-    pinMode(LED_BUILTIN, OUTPUT);
-
     Serial.begin(115200);
     delay(1000);
 

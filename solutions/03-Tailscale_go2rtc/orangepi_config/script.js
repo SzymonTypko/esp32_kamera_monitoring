@@ -2,6 +2,8 @@ const appConfig = window.appConfig;
 const cameraImage = document.getElementById("cameraImage");
 const statusElement = document.getElementById("status");
 const streamButton = document.getElementById("streamButton");
+const tempButton = document.getElementById("tempButton");
+const tempValue = document.getElementById("tempValue");
 const settingUpdatesInProgress = new Set();
 let streamEnabled = true;
 
@@ -16,16 +18,17 @@ function sendRequest(url, description) {
   statusElement.style.color = "#ff9800";
 
   return fetch(url)
-    .then((response) => {
+    .then(async (response) => {
       if (!response.ok) {
         statusElement.textContent = `Błąd: ${description}.`;
         statusElement.style.color = "#f44336";
         console.error(`Błąd żądania (${description}): HTTP ${response.status}`);
         return { success: false, status: response.status };
       }
+      const body = await response.text();
       statusElement.textContent = `Wysłano: ${description}.`;
       statusElement.style.color = "#4caf50";
-      return { success: true, status: response.status };
+      return { success: true, status: response.status, body };
     })
     .catch((error) => {
       statusElement.textContent = `Błąd: ${description}.`;
@@ -51,8 +54,22 @@ function updateStreamVisibility() {
   }
 }
 
-function toggleLED() {
-  sendRequest(appConfig.endpoints.led, "przełączenie LED");
+async function getTemp() {
+  tempButton.disabled = true;
+  tempButton.setAttribute("aria-busy", "true");
+  try {
+    const result = await sendRequest(appConfig.endpoints.temp, "pobranie temperatury");
+    if (!result.success) return;
+    const { cur_temp: temperature } = JSON.parse(result.body);
+    tempValue.textContent = temperature.toFixed(2);
+  } catch (error) {
+    statusElement.textContent = "Błąd: nie udało się odczytać temperatury.";
+    statusElement.style.color = "#f44336";
+    console.error("Błąd odczytu temperatury:", error);
+  } finally {
+    tempButton.disabled = false;
+    tempButton.removeAttribute("aria-busy");
+  }
 }
 
 function rotateCamera(direction) {
@@ -88,7 +105,7 @@ function changeSetting(settingName, slider, button) {
 }
 
 document.getElementById("streamButton").addEventListener("click", toggleStream);
-document.getElementById("ledButton").addEventListener("click", toggleLED);
+tempButton.addEventListener("click", getTemp);
 document.getElementById("rotateLeftButton").addEventListener("click", () => rotateCamera("left"));
 document.getElementById("rotateRightButton").addEventListener("click", () => rotateCamera("right"));
 

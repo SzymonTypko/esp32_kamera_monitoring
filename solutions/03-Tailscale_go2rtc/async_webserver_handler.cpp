@@ -141,11 +141,9 @@ void handleStream(AsyncWebServerRequest *request) {
     request->send(response);
 }
 
-void handleToggleLED(AsyncWebServerRequest *request) {
-    ledState = !ledState;
-    digitalWrite(LED_BUILTIN, ledState ? LOW : HIGH);
-
-    String json = "{\"ledState\":" + String(ledState ? "true" : "false") + "}";
+void handleGetTemp(AsyncWebServerRequest *request) {
+    float currentTemp = temperatureRead();
+    String json = "{\"cur_temp\":" + String(currentTemp, 2) + "}";
     request->send(200, "application/json", json);
 }
 
@@ -229,12 +227,12 @@ void handleCameraSetting(AsyncWebServerRequest *request) {
 }
 
 void handleRotateLeft(AsyncWebServerRequest *request) {
-    //move_servo(ServoConfig::pan_servo_pin, ServoConfig::rotate_left, ServoConfig::rotation_delay);
+    move_servo(ServoConfig::pan_servo_pin, ServoConfig::rotate_left, ServoConfig::rotation_delay);
     request->send(200, "text/plain", "OK");
 }
 
 void handleRotateRight(AsyncWebServerRequest *request) {
-    //move_servo(ServoConfig::pan_servo_pin, ServoConfig::rotate_right, ServoConfig::rotation_delay);
+    move_servo(ServoConfig::pan_servo_pin, ServoConfig::rotate_right, ServoConfig::rotation_delay);
     request->send(200, "text/plain", "OK");
 }
 
@@ -246,7 +244,7 @@ void handleNotFound(AsyncWebServerRequest *request) {
 
 void asyncWebServerSetup() {
     server.on("/stream", HTTP_GET, handleStream);
-    server.on("/toggle_led", HTTP_GET, handleToggleLED);
+    server.on("/get_temp", HTTP_GET, handleGetTemp);
     server.on("/set_camera", HTTP_GET, handleCameraSetting);
     server.on("/rotate_left", HTTP_GET, handleRotateLeft);
     server.on("/rotate_right", HTTP_GET, handleRotateRight);

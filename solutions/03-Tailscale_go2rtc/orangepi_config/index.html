@@ -27,7 +27,6 @@
                 <summary>Sterowanie</summary>
                 <div class="controls">
                     <button class="btn" id="streamButton" type="button">Wyłącz stream</button>
-                    <button class="btn" id="ledButton" type="button">Przełącz diodę LED</button>
                     <div class="rotation-buttons">
                         <button class="btn" id="rotateLeftButton" type="button">Obróć w lewo</button>
                         <button class="btn" id="rotateRightButton" type="button">Obróć w prawo</button>
@@ -73,6 +72,14 @@
                             <button class="btn setting-button" type="button" data-action="send">Wyślij</button>
                         </div>
                     </div>
+                </div>
+            </details>
+
+            <details class="panel-section" open>
+                <summary>Info</summary>
+                <div class="temperature-info">
+                    <p class="temp-status">Temperatura kamery: <span class="temperature-value" id="tempValue" aria-live="polite">--</span> °C</p>
+                    <button class="btn temperature-button" id="tempButton" type="button"> &#8635; </button>
                 </div>
             </details>
         </aside>

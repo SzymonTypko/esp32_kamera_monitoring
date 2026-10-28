@@ -168,6 +168,34 @@ img {
   font-weight: 700;
 }
 
+.temperature-info {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px 14px;
+  color: #ddd;
+}
+
+.temperature-value {
+  color: #90caf9;
+  font-weight: 700;
+}
+
+.temperature-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.temp-status {
+  align-content: center;
+}
+
+.temperature-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
 @media (max-width: 800px) {
   body {
     height: auto;
