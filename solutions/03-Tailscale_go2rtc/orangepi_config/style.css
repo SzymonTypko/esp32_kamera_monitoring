@@ -168,30 +168,42 @@ img {
   font-weight: 700;
 }
 
-.temperature-info {
+.status-info {
   display: flex;
+  flex-direction: column;
   gap: 10px;
   padding: 12px 14px 14px;
   color: #ddd;
 }
 
-.temperature-value {
-  color: #90caf9;
+.camera-status {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 8px 12px;
+}
+
+.camera-status dt {
   font-weight: 700;
 }
 
-.temperature-button {
+.camera-status dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.status-button {
+  width: 100%;
+  flex: 0 0 auto;
+  min-height: 42px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  font-size: 1.25rem;
 }
 
-.temp-status {
-  align-content: center;
-}
-
-.temperature-button:disabled {
+.status-button:disabled {
   cursor: wait;
   opacity: 0.6;
 }

@@ -3,7 +3,7 @@
 window.appConfig = {
   streamUrl: "/api/stream.mjpeg?src=esp_cam",
   endpoints: {
-    temp: "/control/get_temp",
+    status: "/control/get_status",
     rotateLeft: "/control/rotate_left",
     rotateRight: "/control/rotate_right",
     settings: "/control/set_camera"

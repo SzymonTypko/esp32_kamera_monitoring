@@ -15,7 +15,7 @@ SETTING_LIMITS = {
 }
 
 ALLOWED_COMMANDS = {
-    "get_temp",
+    "get_status",
     "rotate_left",
     "rotate_right",
 }

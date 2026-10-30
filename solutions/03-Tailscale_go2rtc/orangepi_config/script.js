@@ -2,9 +2,18 @@ const appConfig = window.appConfig;
 const cameraImage = document.getElementById("cameraImage");
 const statusElement = document.getElementById("status");
 const streamButton = document.getElementById("streamButton");
-const tempButton = document.getElementById("tempButton");
-const tempValue = document.getElementById("tempValue");
+const statusButton = document.getElementById("statusButton");
+const statusValue = document.getElementById("statusValue");
 const settingUpdatesInProgress = new Set();
+const statusLabels = {
+  temperature_c: "Temperatura kamery (°C)",
+  wifi_connected: "Połączenie Wi-Fi",
+  wifi_rssi_dbm: "Siła sygnału Wi-Fi (dBm)",
+  uptime_seconds: "Czas pracy (s)",
+  free_heap_bytes: "Wolna pamięć heap (B)",
+  free_psram_bytes: "Wolna pamięć PSRAM (B)",
+  stream_active: "Strumień aktywny"
+};
 let streamEnabled = true;
 
 function sendRequest(url, description) {
@@ -54,21 +63,33 @@ function updateStreamVisibility() {
   }
 }
 
-async function getTemp() {
-  tempButton.disabled = true;
-  tempButton.setAttribute("aria-busy", "true");
+async function getStatus() {
+  statusButton.disabled = true;
+  statusButton.setAttribute("aria-busy", "true");
   try {
-    const result = await sendRequest(appConfig.endpoints.temp, "pobranie temperatury");
+    const result = await sendRequest(appConfig.endpoints.status, "pobranie statusu kamery");
     if (!result.success) return;
-    const { cur_temp: temperature } = JSON.parse(result.body);
-    tempValue.textContent = temperature.toFixed(2);
+    const cameraStatus = JSON.parse(result.body);
+    if (cameraStatus === null || typeof cameraStatus !== "object" || Array.isArray(cameraStatus)) {
+      throw new Error("Nieprawidłowy format statusu kamery.");
+    }
+    
+    const statusRows = document.createDocumentFragment();
+    Object.entries(cameraStatus).forEach(([key, value]) => {
+      const label = document.createElement("dt");
+      label.textContent = statusLabels[key] || key;
+      const status = document.createElement("dd");
+      status.textContent = String(value);
+      statusRows.append(label, status);
+    });
+    statusValue.replaceChildren(statusRows);
   } catch (error) {
-    statusElement.textContent = "Błąd: nie udało się odczytać temperatury.";
+    statusElement.textContent = "Błąd: nie udało się odczytać statusu kamery.";
     statusElement.style.color = "#f44336";
-    console.error("Błąd odczytu temperatury:", error);
+    console.error("Błąd odczytu statusu kamery:", error);
   } finally {
-    tempButton.disabled = false;
-    tempButton.removeAttribute("aria-busy");
+    statusButton.disabled = false;
+    statusButton.removeAttribute("aria-busy");
   }
 }
 
@@ -105,7 +126,7 @@ function changeSetting(settingName, slider, button) {
 }
 
 document.getElementById("streamButton").addEventListener("click", toggleStream);
-tempButton.addEventListener("click", getTemp);
+statusButton.addEventListener("click", getStatus);
 document.getElementById("rotateLeftButton").addEventListener("click", () => rotateCamera("left"));
 document.getElementById("rotateRightButton").addEventListener("click", () => rotateCamera("right"));
 
@@ -130,6 +151,7 @@ document.querySelectorAll(".setting[data-setting]").forEach((setting) => {
   });
 });
 
+getStatus();
 updateStreamVisibility();
 document.addEventListener("visibilitychange", updateStreamVisibility);
 window.addEventListener("pagehide", () => cameraImage.removeAttribute("src"));

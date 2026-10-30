@@ -45,13 +45,13 @@ public:
             return RESPONSE_TRY_AGAIN;
         }
 
-        if (frame != nullptr && frameIndex == frame->len) {
+        if (frameData != nullptr && frameIndex == frameLength) {
             releaseFrame();
         }
 
-        if (frame == nullptr) {
+        if (frameData == nullptr) {
             // tu ewentualnie opoznienie aby zmnieszyc fps
-            frame = esp_camera_fb_get();
+            camera_fb_t *frame = esp_camera_fb_get();
 
             if (frame == nullptr) {
                 Serial.println("Nie udalo sie pobrac klatki");
@@ -60,9 +60,24 @@ public:
 
             if (frame->format != PIXFORMAT_JPEG) {
                 Serial.println("Oczekiwano formatu JPEG");
-                releaseFrame();
+                esp_camera_fb_return(frame);
                 return 0;
             }
+
+            frameData = static_cast<uint8_t *>(ps_malloc(frame->len));
+            if (frameData == nullptr) {
+                frameData = static_cast<uint8_t *>(malloc(frame->len));
+            }
+
+            if (frameData == nullptr) {
+                Serial.println("Nie udalo sie zaalokowac bufora klatki");
+                esp_camera_fb_return(frame);
+                return 0;
+            }
+
+            frameLength = frame->len;
+            memcpy(frameData, frame->buf, frameLength);
+            esp_camera_fb_return(frame);
         }
 
         size_t copied = 0;
@@ -76,7 +91,7 @@ public:
                 header,
                 sizeof(header),
                 FRAME_HEADER,
-                static_cast<unsigned int>(frame->len)
+                static_cast<unsigned int>(frameLength)
             );
 
             if (headerLength <= 0 ||
@@ -96,25 +111,27 @@ public:
             firstFrame = false;
         }
 
-        size_t remaining = frame->len - frameIndex;
+        size_t remaining = frameLength - frameIndex;
         size_t jpegBytes = min(remaining, maxLen - copied);
-        memcpy(buffer + copied, frame->buf + frameIndex, jpegBytes);
+        memcpy(buffer + copied, frameData + frameIndex, jpegBytes);
 
         frameIndex += jpegBytes;
         return copied + jpegBytes;
     }
 
 private:
-    camera_fb_t *frame = nullptr;
+    uint8_t *frameData = nullptr;
+    size_t frameLength = 0;
     size_t frameIndex = 0;
     bool firstFrame = true;
 
     void releaseFrame() {
-        if (frame != nullptr) {
-            esp_camera_fb_return(frame);
-            frame = nullptr;
+        if (frameData != nullptr) {
+            free(frameData);
+            frameData = nullptr;
         }
 
+        frameLength = 0;
         frameIndex = 0;
     }
 };
@@ -141,9 +158,26 @@ void handleStream(AsyncWebServerRequest *request) {
     request->send(response);
 }
 
-void handleGetTemp(AsyncWebServerRequest *request) {
-    float currentTemp = temperatureRead();
-    String json = "{\"cur_temp\":" + String(currentTemp, 2) + "}";
+void handleGetStatus(AsyncWebServerRequest *request) {
+    const bool wifiConnected = WiFi.status() == WL_CONNECTED;
+    String json = "{\"temperature_c\":" + String(temperatureRead(), 2);
+    json += ",\"wifi_connected\":";
+    json += wifiConnected ? "true" : "false";
+    json += ",\"wifi_rssi_dbm\":";
+    if (wifiConnected) {
+        json += String(WiFi.RSSI());
+    } else {
+        json += "null";
+    }
+    json += ",\"uptime_seconds\":";
+    json += String(millis() / 1000UL);
+    json += ",\"free_heap_bytes\":";
+    json += String(ESP.getFreeHeap());
+    json += ",\"free_psram_bytes\":";
+    json += String(ESP.getFreePsram());
+    json += ",\"stream_active\":";
+    json += streamActive ? "true}" : "false}";
+
     request->send(200, "application/json", json);
 }
 
@@ -244,7 +278,7 @@ void handleNotFound(AsyncWebServerRequest *request) {
 
 void asyncWebServerSetup() {
     server.on("/stream", HTTP_GET, handleStream);
-    server.on("/get_temp", HTTP_GET, handleGetTemp);
+    server.on("/get_status", HTTP_GET, handleGetStatus);
     server.on("/set_camera", HTTP_GET, handleCameraSetting);
     server.on("/rotate_left", HTTP_GET, handleRotateLeft);
     server.on("/rotate_right", HTTP_GET, handleRotateRight);
